@@ -1,0 +1,21 @@
+{
+  "name": "nealg/cacher",
+  "description": "description_text",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Neal Geilen",
+      "email": "nealgeilen@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Cacher\\": "src/"
+    }
+  },
+  "require": {
+    "php" : "^7.3",
+    "matthiasmullie/minify": "^1.3"
+  }
+}
