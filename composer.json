@@ -1,8 +1,9 @@
 {
   "name": "nealg/cacher",
-  "description": "description_text",
+  "description": "Css & Js, php minifyer and cacher",
   "minimum-stability": "stable",
   "license": "proprietary",
+  "version": "1.0",
   "authors": [
     {
       "name": "Neal Geilen",
