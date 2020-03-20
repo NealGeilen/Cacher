@@ -36,6 +36,19 @@ class Cacher{
         $this->minifyCSS = new CSS();
     }
 
+    /**
+     * @param array $aFiles
+     * @return $this
+     * @throws Exception
+     */
+    public function setFiles(array $aFiles){
+        if (!isset($aFiles[self::Css]) || !isset($aFiles[self::Js])){
+            throw new Exception("Js & Css object not defined", 500);
+        }
+        $this->Files[self::Js] = $aFiles[self::Js];
+        $this->Files[self::Js] = $aFiles[self::Css];
+        return $this;
+    }
 
     /**
      * @param string $type
