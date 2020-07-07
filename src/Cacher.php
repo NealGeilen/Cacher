@@ -67,7 +67,7 @@ class Cacher{
     {
         $sDir = $_SERVER["DOCUMENT_ROOT"] . DIRECTORY_SEPARATOR . $this->cachDirectorie;
         if (!is_dir($sDir)){
-            mkdir($sDir);
+            mkdir($sDir,0777,true);
         }
         return $sDir;
     }
