@@ -114,25 +114,30 @@ class Cacher{
             if (filemtime($JsFile) > time() + 86400){
                 $this->minifyJS->minify($JsFile);
             }
-        } else {
+        } else if (!empty($this->Files[self::Js])) {
             $this->minifyJS->minify($JsFile);
         }
 
         /**
-         * Chek Css File
+         * Check Css File
          */
         if (is_file($CssFile)){
             if (filemtime($CssFile) > time() + 86400){
                 $this->minifyCSS->minify($CssFile);
             }
-        } else {
+        } else if (!empty($this->Files[self::Css])) {
             $this->minifyCSS->minify($CssFile);
         }
 
-        return [
-            self::Css => "/" . $this->cachDirectorie . "/". $this->getName(). ".min.css",
-            self::Js => "/" . $this->cachDirectorie . "/". $this->getName(). ".min.js",
-        ];
+        if (is_file($JsFile)){
+            $aReturnData[self::Js] = "/" . $this->cachDirectorie . "/". $this->getName(). ".min.js";
+        }
+
+        if (is_file($CssFile)){
+            $aReturnData[self::Css] = "/" . $this->cachDirectorie . "/". $this->getName(). ".min.css";
+        }
+
+        return $aReturnData;
     }
 
     /**
