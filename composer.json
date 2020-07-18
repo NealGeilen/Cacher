@@ -3,7 +3,7 @@
   "description": "Css & Js, php minifyer and cacher",
   "minimum-stability": "stable",
   "license": "proprietary",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     {
       "name": "Neal Geilen",
