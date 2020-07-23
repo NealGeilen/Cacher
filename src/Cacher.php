@@ -128,6 +128,7 @@ class Cacher{
         } else if (!empty($this->Files[self::Css])) {
             $this->minifyCSS->minify($CssFile);
         }
+        $aReturnData = [];
 
         if (is_file($JsFile)){
             $aReturnData[self::Js] = "/" . $this->cachDirectorie . "/". $this->getName(). ".min.js";
