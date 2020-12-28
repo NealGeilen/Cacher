@@ -5,6 +5,7 @@ namespace Cacher;
 use Exception;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
+use function Couchbase\defaultDecoder;
 
 class Cacher{
 
@@ -25,6 +26,8 @@ class Cacher{
      * @var CSS
      */
     private $minifyCSS;
+
+    private $func = null;
 
 
     /**
@@ -55,13 +58,13 @@ class Cacher{
      * @param string $source
      * @return $this
      */
-    public function add($type, $source){
+    public function add(string $type,string $source){
         $this->Files[$type][] = $source;
         return $this;
     }
 
     /**
-     * @return null|string
+     * @return string
      */
     protected function getCachDirectorie()
     {
@@ -73,12 +76,16 @@ class Cacher{
     }
 
     /**
-     * @param string $cachDirectorie
+     * @param $cachDirectorie
+     * @return $this
      */
-    public function setCachDirectorie($cachDirectorie)
+    public function setCachDirectory($cachDirectorie)
     {
         $this->cachDirectorie = $cachDirectorie;
+        return $this;
     }
+
+
 
     protected function build(){
         foreach ($this->Files[self::Css] as $file){
@@ -90,56 +97,80 @@ class Cacher{
     }
 
     /**
-     * @return array
+     * @param callable $function
+     * @return $this
+     */
+    public function callback(callable $function){
+        if (is_callable($function)){
+            $this->func = $function;
+        }
+        return $this;
+    }
+
+    /**
+     * @return $this
      * @throws Exception
      */
-    public function getMinifyedFiles(){
+    public function Minify(){
+        if (!is_null($this->func)){
+            call_user_func($this->func, $this);
+        }
         /**
-         * Check if directorie is defined
+         * Check if directory is defined
          */
         if (!is_null($this->cachDirectorie)){
             $this->build();
         } else {
-            throw new Exception("Cach directorie is not given", 500);
-        }
-        /**
-         * File locations
-         */
-        $JsFile = $this->getCachDirectorie() . DIRECTORY_SEPARATOR .$this->getName(). ".min.js";
-        $CssFile = $this->getCachDirectorie() .DIRECTORY_SEPARATOR .$this->getName().".min.css";
-        /**
-         * Check Js File
-         */
-        if (is_file($JsFile)){
-            if (filemtime($JsFile) > time() + 86400){
-                $this->minifyJS->minify($JsFile);
-            }
-        } else if (!empty($this->Files[self::Js])) {
-            $this->minifyJS->minify($JsFile);
+            throw new Exception("Cach directory is not given", 500);
         }
 
-        /**
-         * Check Css File
-         */
-        if (is_file($CssFile)){
-            if (filemtime($CssFile) > time() + 86400){
-                $this->minifyCSS->minify($CssFile);
-            }
-        } else if (!empty($this->Files[self::Css])) {
-            $this->minifyCSS->minify($CssFile);
+
+        if (!empty($this->Files[self::Js])) {
+            $this->minifyJS->minify($this->getJsFile());
         }
+
+        if (!empty($this->Files[self::Css])) {
+            $this->minifyCSS->minify($this->getCssFile());
+        }
+        return $this;
+
+    }
+
+    /**
+     * @return array
+     * @throws Exception
+     */
+    public function getMinifyedFiles(){
         $aReturnData = [];
 
-        if (is_file($JsFile)){
-            $aReturnData[self::Js] = "/" . $this->cachDirectorie . "/". $this->getName(). ".min.js";
+        if (is_file($this->getJsFile())){
+            $aReturnData[self::Js] = $this->getJsFile(false);
         }
 
-        if (is_file($CssFile)){
-            $aReturnData[self::Css] = "/" . $this->cachDirectorie . "/". $this->getName(). ".min.css";
+        if (is_file($this->getCssFile())){
+            $aReturnData[self::Css] = $this->getCssFile(false);
         }
 
         return $aReturnData;
     }
+
+    /**
+     * @param bool $relative
+     * @return string
+     */
+    public function getJsFile($relative = true):string
+    {
+        return ($relative) ? $this->getCachDirectorie() . DIRECTORY_SEPARATOR .$this->getName(). ".min.js" : "/" . $this->cachDirectorie . "/". $this->getName(). ".min.js";
+    }
+
+    /**
+     * @param bool $relative
+     * @return string
+     */
+     public function getCssFile($relative = true):string
+     {
+         return ($relative) ? $this->getCachDirectorie() . DIRECTORY_SEPARATOR .$this->getName(). ".min.css" : "/" . $this->cachDirectorie . "/". $this->getName(). ".min.css";
+     }
 
     /**
      * @return null|string
