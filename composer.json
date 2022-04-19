@@ -16,7 +16,7 @@
     }
   },
   "require": {
-    "php" : "^7.3",
+    "php" : ">=5.3.0",
     "matthiasmullie/minify": "^1.3"
   }
 }
